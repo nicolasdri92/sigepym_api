@@ -14,11 +14,11 @@ const options = {
   useFindAndModify: false,
 };
 
+const URI_remote = `mongodb+srv://${DB_USER}:${DB_PASSWORD}@sigepym.7p2ef.mongodb.net/${DB_NAME}?retryWrites=true&w=majority`;
+const URI_local = `mongodb://localhost:27017/${DB_NAME}`;
+
 mongoose
-  .connect(
-    `mongodb+srv://${DB_USER}:${DB_PASSWORD}@sigepym.7p2ef.mongodb.net/${DB_NAME}?retryWrites=true&w=majority`,
-    options
-  )
+  .connect(URI_local, options)
   .then(() =>
     app.listen(DB_PORT, () => {
       console.log(moment().format("HH:mm:ss"));

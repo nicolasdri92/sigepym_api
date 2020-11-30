@@ -1,7 +1,8 @@
-const COMPANY = require("../models/company.model");
+const Company = require("../models/company.model");
+const User = require("../models/user.model");
 
 listAll = async (req, res) => {
-  await COMPANY.find((err, company) => {
+  await Company.find((err, company) => {
     if (err) {
       res.status(404).send({ message: err });
     } else {
@@ -14,8 +15,8 @@ listAll = async (req, res) => {
   });
 };
 
-getById = async (req, res) => {
-  await COMPANY.findOne({ _id: req.params.id }, (err, company) => {
+listOne = async (req, res) => {
+  await Company.findOne({ _id: req.params.id }, (err, company) => {
     if (err) {
       res.status(404).send({ message: err });
     } else {
@@ -29,16 +30,14 @@ getById = async (req, res) => {
 };
 
 saveCompany = async (req, res) => {
-  await USER.findOne({ _id: req.params.id }, (err, company) => {
+  await User.findOne({ _id: req.params.id }, (err, user) => {
     if (err) {
       res.status(404).send({ message: err });
     } else {
-      if (company) {
-        res.status(500).send({ message: "Error en la ppeticion" });
+      if (!user) {
+        res.status(500).send({ message: "Error en la peticion" });
       } else {
-        let company = new COMPANY();
-        company.name = req.body.name;
-        company.activity = req.body.activity;
+        const company = new Company(req.body);
         company.user = req.params.id;
         company.save((err, companyStoraged) => {
           if (err) {
@@ -47,7 +46,7 @@ saveCompany = async (req, res) => {
             if (!companyStoraged) {
               res.status(500).send({ message: "Error en la peticion" });
             } else {
-              res.status(200).send();
+              res.status(200).send(companyStoraged);
             }
           }
         });
@@ -57,14 +56,14 @@ saveCompany = async (req, res) => {
 };
 
 updateCompany = async (req, res) => {
-  await COMPANY.findOne({ _id: req.params.id }, (err, company) => {
+  await Company.findOne({ _id: req.params.id }, (err, company) => {
     if (err) {
       res.status(404).send({ message: err });
     } else {
       if (!company) {
         res.status(500).send({ message: "Error en la peticion" });
       } else {
-        COMPANY.findOneAndUpdate(
+        Company.findOneAndUpdate(
           {
             name: req.body.email,
             activity: req.body.activity,
@@ -88,7 +87,7 @@ updateCompany = async (req, res) => {
 };
 
 deleteCompany = async (req, res) => {
-  await COMPANY.findOneAndDelete(
+  await Company.findOneAndDelete(
     { _id: req.params.id },
     (err, companyDeleted) => {
       if (err) {
@@ -106,7 +105,7 @@ deleteCompany = async (req, res) => {
 
 module.exports = {
   listAll,
-  getById,
+  listOne,
   saveCompany,
   updateCompany,
   deleteCompany,

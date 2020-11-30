@@ -1,9 +1,8 @@
-const bcrypt = require("bcrypt");
 const moment = require("moment");
-const USER = require("../models/user.model");
+const User = require("../models/user.model");
 
 listAll = async (req, res) => {
-  await USER.find((err, user) => {
+  await User.find((err, user) => {
     if (err) {
       res.status(404).send({ message: err });
     } else {
@@ -16,8 +15,8 @@ listAll = async (req, res) => {
   });
 };
 
-getById = async (req, res) => {
-  await USER.findOne({ _id: req.params.id }, (err, user) => {
+listOne = async (req, res) => {
+  await User.findOne({ _id: req.params.id }, (err, user) => {
     if (err) {
       res.status(404).send({ message: err });
     } else {
@@ -29,9 +28,11 @@ getById = async (req, res) => {
     }
   });
 };
+
+saveUser = async (req, res) => {};
 
 updateUser = async (req, res) => {
-  await USER.findOneAndUpdate(
+  await User.findOneAndUpdate(
     { _id: req.params.id },
     { email: req.body.email, password: req.body.password },
     (err, userUpdated) => {
@@ -50,7 +51,7 @@ updateUser = async (req, res) => {
 };
 
 deleteUser = async (req, res) => {
-  await USER.findOneAndDelete({ _id: req.params.id }, (err, userDeleted) => {
+  await User.findOneAndDelete({ _id: req.params.id }, (err, userDeleted) => {
     if (err) {
       res.status(404).send({ message: err });
     } else {
@@ -64,15 +65,12 @@ deleteUser = async (req, res) => {
 };
 
 updateLastConnection = async (req) => {
-  await USER.findOneAndUpdate(
-    { _id: req.id },
-    { lastConnection: moment() },
-  );
+  await User.findOneAndUpdate({ _id: req.id }, { lastConnection: moment() });
 };
 
 module.exports = {
   listAll,
-  getById,
+  listOne,
   updateUser,
   deleteUser,
   updateLastConnection,

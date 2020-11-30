@@ -4,13 +4,12 @@ require("dotenv").config();
 const KEY_JWT = process.env.KEY_JWT;
 
 exports.ensureAuth = (req, res, next) => {
-  console.log(KEY_JWT);
   if (!req.headers.authorization) {
     return res.status(403).send({
       message: "La petición no tiene la cabecera de autenticación",
     });
   }
-  const token = req.headers.authorization.replace(/['"]+/g, "");
+  let token = req.headers.authorization.replace(/['"]+/g, "").split(" ")[1];
   try {
     const payload = jwt.decode(token, KEY_JWT);
     if (payload.exp <= moment().unix()) {

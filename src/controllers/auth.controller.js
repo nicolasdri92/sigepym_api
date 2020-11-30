@@ -1,10 +1,15 @@
 const bcrypt = require("bcrypt");
-const USER = require("../models/user.model");
-const USERCONTROLLER = require("./user.controller");
-const JWT = require("../services/jwt.service");
+const User = require("../models/user.model");
+const UserController = require("./user.controller");
+const Jwt = require("../services/jwt.service");
 
+/*
+ * http: post
+ * request: {email: string, password: string}
+ * response: token
+ */
 login = async (req, res) => {
-  USER.findOne({ email: req.body.email }, (err, user) => {
+  await User.findOne({ email: req.body.email }, (err, user) => {
     if (err) {
       res.status(404).send({ message: err });
     } else {
@@ -21,10 +26,10 @@ login = async (req, res) => {
               if (!userStoraged) {
                 res.status(500).send({ message: "Error en la peticion" });
               } else {
-                USERCONTROLLER.updateLastConnection({
+                UserController.updateLastConnection({
                   id: user.id,
                 });
-                res.status(200).send({ token: JWT.ensureAuth(user) });
+                res.status(200).send({ token: Jwt.ensureAuth(user) });
               }
             }
           }
@@ -34,8 +39,13 @@ login = async (req, res) => {
   });
 };
 
+/*
+ * http: post
+ * request: {email: string, password: string}
+ * response: {message: string}
+ */
 register = async (req, res) => {
-  await USER.findOne({ email: req.body.email }, (err, user) => {
+  await User.findOne({ email: req.body.email }, (err, user) => {
     if (err) {
       res.status(404).send({ message: err });
     } else {
@@ -49,7 +59,7 @@ register = async (req, res) => {
             if (!hash) {
               res.status(500).send({ message: "Error en la peticion" });
             } else {
-              let user = new USER();
+              let user = new User();
               user.email = req.body.email;
               user.password = hash;
               user.save((err, userStoraged) => {
